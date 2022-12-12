@@ -14,14 +14,26 @@
 # 使用方法
 ## 对象的创建
 ```python
-a = NumBerUse("******************")  # ()内填入字符串类型的身份证号
+a = number.NumBerUse("******************")  # ()内填入字符串类型的身份证号
 ```
 
 ## 方法
 1.查看年龄
 ```python
-a = NumBerUse("******20111218****")
+a = number.NumBerUse("******20111218****")
 age = a.showage()  # 函数会将年龄作为整形存放至变量内共您使用
+```
+
+2.查看性别
+```python
+a = number.NumBerUse("******************")
+sex = a.sex()
+```
+
+3.查看地区
+```python
+a = number.NumBerUse()
+city = a.city_load()
 ```
 `不可用于非法操作，若对本插件进行非法操作，我们不承担任何后果`
 
