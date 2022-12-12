@@ -7,10 +7,53 @@ import datetime  # 年龄判断使用
 import json  # 读取JSON用
 
 class NumBerUse:
-    def __init__(self, num):
-        print("身份证测验系统，版本1.0.7 | 本软件仅支持中国身份证")
+    def __init__(self, num, admin = False):
+        self.if_admin = admin
+        self.out_logs("身份证测验系统，版本1.0.7 | 本软件仅支持中国身份证")
         self.num = num
         self.checknum()
+        if admin:
+            self.start_admain()
+        else:
+            self.out_logs("未开启管理员模式，某些功能可能无法操作！", 1)
+
+    # 启动管理员模式
+    def start_admain(self):
+        f = open("administrators.cfg","w+",encoding="utf8")
+        if f.read() == "":
+            self.out_logs("发现内容缺失，启用输入模式 | 请在日志区域输入")
+            username = self.out_logs("输入用户名", -1)
+            password = self.out_logs("请输入密码", -1)
+            admin = {"username" : username,"password" : password}
+            json_data = json.dumps(admin)
+            f.write(json_data)
+            self.out_logs("已载入内容")
+        else:
+            things = f.read()
+            json_data = json.loads(things)
+            self.out_logs("已检测到配置文件，开始验证...")
+            username = self.out_logs("请输入用户名", -1)
+            password = self.out_logs("请输入密码", -1)
+            if json_data["username"] == username and json_data["password"] == password:
+                self.if_admain = True
+                self.out_logs("验证完成！")
+                return
+            else:
+                self.out_logs("用户名或密码错误", 2)
+
+
+# 日志输出函数
+    def out_logs(self, things, mode = 0):
+        if mode == 0:
+            print("[身份证插件·日志/INFO]->" + things)
+        elif mode == 1:
+            print("[警告/Warning] >:" + things)
+        elif mode == 2:
+            print("[错误/Error] >>" + things)
+        elif mode == -1:
+            print("[日志输入系统/Input] >>" + things)
+            In = input()
+            return In
 
     # 检查身份证
     def checknum(self):
@@ -22,18 +65,34 @@ class NumBerUse:
             try:
                 # 判断是否为数字
                 int(self.num)
-                print("正确！")
+                self.out_logs("验证成功")
                 return True
             except:
                 # 校验码是否为X
                 if self.num[17] == "X":
                     return True
                 else:
-                    print("错误")
+                    self.out_logs("验证失败，格式错误", -1)
                     return False
             finally:
                 # 释放内存
-                print("完毕")
+                pass
+
+    # 存储用户数据
+    def save_cfg(self):
+        self.out_logs("该操作可能导致信息泄露，请全面杀毒并确保服务端安全后在使用保存功能", 1)
+        f = open("save.json", "a+", encoding="utf8")
+        if self.if_admin:
+            num = self.num
+            sex = self.sex()
+            age = self.showage()
+            user = {"Num" : num,"Sex" : sex, "Age" : age}
+            json_data = json.dumps(user)
+            self.out_logs("存储成功！")
+            return
+        else:
+            self.out_logs("未获得管理员权限！", -1)
+
     # 查看年龄
     def showage(self):
         today = datetime.date.today()  # 今天的日期
